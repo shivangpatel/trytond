@@ -1,0 +1,71 @@
+ #SERVER
+ sudo apt-get install postgresql postgresql-contrib
+ #CLIENT
+ sudo apt-get install postgresql-client
+ 
+ apt-cache search postgres
+  
+ sudo apt-get install pgadmin3
+ 
+ 
+ >>>Basic Server Setup<<<
+ 
+ sudo -u postgres psql postgres_username
+ \password postgres_username
+ 
+ ##DatabaseCreation :
+ sudo -u postgres createdb mydb_dbname
+ 
+ >>>Using pgAdmin III GUI<<<
+ pgadmin3
+ 
+ >>>Config<<<
+ sudo vim /etc/postgresql/9.3/main/pg_hba.conf
+ 
+ # Database administrative login by Unix domain socket
+ local   all             postgres                    md5
+ 
+ sudo /etc/init.d/postgresql reload
+ 
+ >>>Managing the Server<<<
+
+To learn more about managing PostgreSQL (but without the Ubuntu specifics) see the official PostgreSQL documentation
+
+Managing users and rights
+
+User management is discussed in detail in the client authentication chapter of the PostgreSQL documentation; the following is an introduction to get you started.
+
+To manage users, you first have to edit /etc/postgresql/current/main/pg_hba.conf and modify the default configuration which is very locked down and secure. For example, if you want postgres to manage its own users (not linked with system users), you will add the following line:
+
+8<-------------------------------------------
+# TYPE  DATABASE    USER        IP-ADDRESS        IP-MASK           METHOD
+host    all         all         10.0.0.0       255.255.255.0    md5
+8<-------------------------------------------
+
+Which means that on your local network (10.0.0.0/24 - replace with your own local network !), postgres users can connect through the network to the database providing a classical couple user / password.
+
+Besides allowing a user to connect over the network to the to a database on the server, you must enable PostgreSQL to listen across different networks. To do that, open up /etc/postgresql/current/main/postgresql.conf in your favourite editor and alter the listen_addresses as below:
+
+listen_addresses = '*'
+
+to listen on all network interfaces. See the docs for listen_addresses for other options.
+
+To create a database with a user that have full rights on the database, use the following command:
+
+sudo -u postgres createuser -D -A -P myuser
+sudo -u postgres createdb -O myuser mydb
+
+The first command line creates the user with no database creation rights (-D) with no add user rights -A) and will prompt you for entering a password (-P). The second command line create the database 'mydb with 'myuser' as owner.
+
+This little example will probably suit most of your needs. For more details, please refer to the corresponding man pages or the online documentation.
+
+restarting the server
+
+After configuring the networking / users you may need to reload the server, here is a suggested command to do so.
+
+sudo /etc/init.d/postgresql reload
+
+Some settings changes in postgresql.conf require a full restart, which will terminate active connections and abort uncommitted transactions:
+
+sudo /etc/init.d/postgresql restart
+  

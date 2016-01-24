@@ -1,3 +1,6 @@
+ LINK : https://wixelhq.com/blog/how-to-install-postgresql-on-ubuntu-remote-access
+ 
+ 
  #SERVER
  sudo apt-get install postgresql postgresql-contrib
  #CLIENT
